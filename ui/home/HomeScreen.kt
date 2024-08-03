@@ -14,6 +14,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import io.trading.bot.ui.common.Screen
 import io.trading.bot.ui.common.ScreenProvider
+import io.trading.bot.ui.debug.DebugScreenProvider
 import io.trading.bot.ui.signin.SignInScreenProvider
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
@@ -48,8 +49,8 @@ fun HomeScreenContent(viewModel: HomeViewModel = koinViewModel()) {
                 Text("Sign-In")
             }
             Button(
-                onClick = { viewModel.getQuotes() }) {
-                Text("Get Quotes")
+                onClick = { viewModel.navigateTo(DebugScreenProvider.DebugScreen) }) {
+                Text("Debug")
             }
         }
     }

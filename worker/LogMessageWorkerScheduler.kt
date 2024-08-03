@@ -19,15 +19,19 @@ import org.koin.core.component.get
 private const val KEY_MESSAGE = "message"
 
 @Factory
-class LogTelegramMessageWorkerScheduler(private val workManager: WorkManager) {
+class LogMessageWorkerScheduler(private val workManager: WorkManager) {
 
     fun schedule(notification: Notification) {
+        schedule(Json.encodeToString(notification))
+    }
+
+    fun schedule(message: String) {
         val constraints =
             Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
 
         val request = OneTimeWorkRequestBuilder<LogTelegramMessageWorker>()
             .setConstraints(constraints)
-            .setInputData(workDataOf(KEY_MESSAGE to Json.encodeToString(notification)))
+            .setInputData(workDataOf(KEY_MESSAGE to message))
             .build()
 
         workManager.enqueue(request)
