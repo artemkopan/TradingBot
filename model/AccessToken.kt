@@ -4,5 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AccessToken(
-    val token: String
+    val token: String,
+    val expiresIn: Int,
+    val refreshToken: String,
 )

@@ -47,6 +47,10 @@ fun HomeScreenContent(viewModel: HomeViewModel = koinViewModel()) {
                 onClick = { viewModel.navigateTo(SignInScreenProvider.SignInScreen) }) {
                 Text("Sign-In")
             }
+            Button(
+                onClick = { viewModel.getQuotes() }) {
+                Text("Get Quotes")
+            }
         }
     }
 }

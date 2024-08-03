@@ -3,6 +3,7 @@ package io.trading.bot.ui.signin
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -49,51 +50,57 @@ fun SignInScreenContent(viewModel: SignInViewModel = koinViewModel()) {
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+                .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
 
-            if (state.showOtp) {
-                Text(state.status)
-                TextField(
-                    value = state.otp,
-                    onValueChange = viewModel::onOtpChanged,
-                    modifier = Modifier.padding(top = 16.dp),
-                    label = { Text("OTP") },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.None
-                    ),
+            TextField(
+                value = state.email,
+                onValueChange = viewModel::onEmailChanged,
+                label = { Text("Email") },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
                 )
-                Button(viewModel::onOtpSubmit, modifier = Modifier.padding(top = 16.dp)) {
-                    Text("Submit")
-                }
-            } else {
-                TextField(
-                    value = state.email,
-                    onValueChange = viewModel::onEmailChanged,
-                    label = { Text("Email") },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
-                    )
-                )
-                TextField(
-                    modifier = Modifier.padding(top = 16.dp),
-                    value = state.password,
-                    onValueChange = viewModel::onPasswordChanged,
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.None
-                    ),
-                    label = { Text("Password") }
-                )
-                Button(viewModel::signIn, modifier = Modifier.padding(top = 16.dp)) {
-                    Text("Submit")
-                }
+            )
+            TextField(
+                modifier = Modifier.padding(top = 16.dp),
+                value = state.password,
+                onValueChange = viewModel::onPasswordChanged,
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.None
+                ),
+                label = { Text("Password") }
+            )
+            Button(viewModel::signIn, modifier = Modifier.padding(top = 16.dp)) {
+                Text("Sign In")
             }
+
+            TextField(
+                value = state.otp,
+                onValueChange = viewModel::onOtpChanged,
+                modifier = Modifier.padding(top = 16.dp),
+                label = { Text("OTP") },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.None
+                ),
+            )
+            Button(viewModel::onOtpSubmit, modifier = Modifier.padding(top = 16.dp)) {
+                Text("Send Otp")
+            }
+
+            Button(viewModel::onRefreshToken, modifier = Modifier.padding(top = 16.dp)) {
+                Text("Refresh Token")
+            }
+
+            Text(state.status, modifier = Modifier.padding(top = 16.dp))
+
             if (state.loading) {
                 CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
             }
@@ -102,7 +109,6 @@ fun SignInScreenContent(viewModel: SignInViewModel = koinViewModel()) {
                     text = state.error,
                     modifier = Modifier
                         .padding(top = 16.dp)
-                        .verticalScroll(rememberScrollState())
                 )
             }
         }

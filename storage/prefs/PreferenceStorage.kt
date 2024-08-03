@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Single
+import timber.log.Timber
 
 @Single
 class PreferenceStorage(private val dataStore: DataStore<Preferences>) {
@@ -18,14 +19,19 @@ class PreferenceStorage(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun getValue(key: String): String? {
-        return dataStore.data.firstOrNull()?.get(stringPreferencesKey(key))
+        val valueOrNull = dataStore.data.firstOrNull()
+        return valueOrNull?.get(stringPreferencesKey(key))
     }
 }
 
-suspend inline fun PreferenceStorage.setData(key: String, value: Any) {
-    setValue(key, Json.encodeToString(value))
+suspend inline fun <reified T> PreferenceStorage.setData(key: String, value: T) {
+    val encodeToString = Json.encodeToString(value)
+    Timber.d("setData() called with: key = $key, value = $value, encodeToString = $encodeToString")
+    setValue(key, encodeToString)
 }
 
 suspend inline fun <reified T> PreferenceStorage.getData(key: String): T? {
-    return getValue(key)?.let { Json.decodeFromString(it) }
+    val value = getValue(key)
+    Timber.d("Data value: $value")
+    return value?.let { Json.decodeFromString(it) }
 }

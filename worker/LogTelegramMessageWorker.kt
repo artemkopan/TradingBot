@@ -16,7 +16,7 @@ import org.koin.core.annotation.Factory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
-private const val KEY_NOTIFICATION = "notification"
+private const val KEY_MESSAGE = "message"
 
 @Factory
 class LogTelegramMessageWorkerScheduler(private val workManager: WorkManager) {
@@ -27,7 +27,7 @@ class LogTelegramMessageWorkerScheduler(private val workManager: WorkManager) {
 
         val request = OneTimeWorkRequestBuilder<LogTelegramMessageWorker>()
             .setConstraints(constraints)
-            .setInputData(workDataOf(KEY_NOTIFICATION to Json.encodeToString(notification)))
+            .setInputData(workDataOf(KEY_MESSAGE to Json.encodeToString(notification)))
             .build()
 
         workManager.enqueue(request)
@@ -38,12 +38,10 @@ class LogTelegramMessageWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params), KoinComponent {
 
     override suspend fun doWork(): Result {
-        val notification: Notification = requireNotNull(inputData.getString(KEY_NOTIFICATION)) {
-            "Notification data is empty"
-        }.let { Json.decodeFromString(it) }
-
-        get<TelegramNetwork>().sendMessage(notification.toString())
-
+        val message = requireNotNull(inputData.getString(KEY_MESSAGE)?.ifBlank { null }) {
+            "Message is empty empty"
+        }
+        get<TelegramNetwork>().sendMessage(message)
         return Result.success()
     }
 }

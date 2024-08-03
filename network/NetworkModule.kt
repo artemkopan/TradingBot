@@ -3,6 +3,8 @@ package io.trading.bot.network
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.ANDROID
 import io.ktor.client.plugins.logging.LogLevel
@@ -12,6 +14,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.appendIfNameAbsent
+import io.trading.bot.network.robinhood.provider.AuthProvider
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
@@ -51,7 +54,9 @@ class NetworkModule {
 
     @Singleton
     @Named(QUALIFIER_RH)
-    fun provideRobinHoodHttpClient() = provideHttpClient().config {
+    fun provideRobinHoodHttpClient(
+        authProvider: AuthProvider
+    ) = provideHttpClient().config {
         install(DefaultRequest) {
             url("https://api.robinhood.com")
             headers.appendIfNameAbsent(
@@ -59,6 +64,11 @@ class NetworkModule {
                 ContentType.Application.Json.toString()
             )
             headers[HttpHeaders.UserAgent] = "Robinhood/823 (iPhone; iOS 7.1.2; Scale/2.00)"
+        }
+        install(Auth) {
+            bearer {
+                authProvider.config(this)
+            }
         }
     }
 }
